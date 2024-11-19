@@ -1,8 +1,10 @@
 import os
 import sys
 import subprocess
+from search_module import searcher
 import argparse
 
+ACTIONS = {'match_line': 'self.match_line("{}","{}")'}
 
 def parse_args() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -21,30 +23,31 @@ def parse_args() -> argparse.ArgumentParser:
 
 
 def validate_file(file: str) -> bool:
-    ...
-
-
-def ignore_case_search(file: str, pattern: str) -> str:
-    ...
-
-
-def match_search(file: str, pattern: str) -> str:
     if os.path.exists(file):
-        line_count = 1
-        with open(file) as user_file:
-            for line in user_file:
-                if (pattern in line):
-                    print( 'found pattern', pattern, 'on line', line_count)
-                line_count += 1
+        return True
     else: 
-        raise FileExistsError(f'The file you provided {file} cannot be found')
+        return False
 
 
 def main():
     args = parse_args()
-    print(args.filename, args.verbose, args.ignore_case)
-    match_search(args.filename, args.pattern, args.ignore_case)
-    ...
+    print("filename:", args.filename, "Verbose?", args.verbose, "ignore_case?", args.ignore_case)
+
+    # validate user file
+    if not validate_file(args.filename):
+        raise FileExistsError(f'the file you provided {args.filename} could not be found')
+
+
+    # instantiate searcher class
+    my_searcher = searcher()
+    my_searcher.iterate_file(args.filename, args.pattern, ACTIONS['match_line'])
+    # print(ACTIONS['match_line'].format('string_a', 'string_b'))
+
+    found_list: list = my_searcher.get_result_list()
+
+    for item in found_list:
+        print(item.get_formatted_result())
+
 
 
 if __name__ == "__main__":
