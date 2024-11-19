@@ -4,9 +4,9 @@ import subprocess
 from search_module import searcher
 import argparse
 
-ACTIONS = {'match_line': 'self.match_line("{}","{}")'}
+ACTIONS = {'MATCH_LINE': 'match_line', 'MATCH_LINE_IGNORE_CASE': 'ignore_case_search'}
 
-def parse_args() -> argparse.ArgumentParser:
+def get_args() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
                         prog='ProgramName',
                         description='What the program does',
@@ -29,8 +29,15 @@ def validate_file(file: str) -> bool:
         return False
 
 
+def determine_action():
+    """
+    determines action based on the args passed
+    """
+    ...
+
+
 def main():
-    args = parse_args()
+    args = get_args()
     print("filename:", args.filename, "Verbose?", args.verbose, "ignore_case?", args.ignore_case)
 
     # validate user file
@@ -40,7 +47,12 @@ def main():
 
     # instantiate searcher class
     my_searcher = searcher()
-    my_searcher.iterate_file(args.filename, args.pattern, ACTIONS['match_line'])
+
+    # if match line is action
+    my_searcher.iterate_file(args.filename, args.pattern, ACTIONS['MATCH_LINE'])
+
+    # elif match line case insensitive
+
     # print(ACTIONS['match_line'].format('string_a', 'string_b'))
 
     found_list: list = my_searcher.get_result_list()
