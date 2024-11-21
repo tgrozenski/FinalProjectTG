@@ -1,7 +1,7 @@
 import re
 from result_module import result
 
-result_list: list = []
+result_list: list[result] = []
 PERFECT_MATCH: float = 1.0
 
 class searcher:
@@ -13,24 +13,26 @@ class searcher:
         return result_list
 
 
-    def match_line(self, line: str, pattern: str) -> bool:
+    def match_line(self, line: str, pattern: str, line_number: int) -> result:
         """
-        Returns a formatted result object if line is found, else returns an empty string ''
+        Returns a result object if line is found, else returns an None 
         """
         if pattern in line:
-            return True
-        return False
+            return result(pattern, pattern, PERFECT_MATCH, line_number)
+        return None
+
+
+    def ignore_case_match(self, file: str, pattern: str, line_number: int) -> str:
+        ...
 
 
     def iterate_file(self, file: str, pattern: str, action: str) -> str:
         line_count = 1
-        comparison = self.__getattribute__(action)
+        selected_method = self.__getattribute__(action)
+        # https://stackoverflow.com/questions/2283210/python-function-pointer
         with open(file) as user_file:
             for line in user_file:
-                if comparison(line, pattern) != '':
-                    print('found', pattern, 'on line', line_count)
+                found = selected_method(line, pattern, line_count)
+                if found != None:
+                    result_list.append(found)
                 line_count += 1
-
-
-    def ignore_case_search(self, file: str, pattern: str) -> str:
-        ...

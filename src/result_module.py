@@ -1,5 +1,3 @@
-from typing import TypedDict
-
 class result:
     def __init__(self, found, pattern, match_percentage, line_location) -> None:
         self.found: str = found 

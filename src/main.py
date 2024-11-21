@@ -22,14 +22,7 @@ def get_args() -> argparse.ArgumentParser:
     return args
 
 
-def validate_file(file: str) -> bool:
-    if os.path.exists(file):
-        return True
-    else: 
-        return False
-
-
-def determine_action():
+def determine_action(args):
     """
     determines action based on the args passed
     """
@@ -41,7 +34,7 @@ def main():
     print("filename:", args.filename, "Verbose?", args.verbose, "ignore_case?", args.ignore_case)
 
     # validate user file
-    if not validate_file(args.filename):
+    if not os.path.exists(args.filename):
         raise FileExistsError(f'the file you provided {args.filename} could not be found')
 
 
