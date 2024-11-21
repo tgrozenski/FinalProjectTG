@@ -1,6 +1,4 @@
 import os
-import sys
-import subprocess
 from search_module import searcher
 import argparse
 
@@ -51,8 +49,7 @@ def main():
     found_list: list = my_searcher.get_result_list()
 
     for item in found_list:
-        print(item.get_formatted_result())
-
+        print(item)
 
 
 if __name__ == "__main__":
