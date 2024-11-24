@@ -1,0 +1,5 @@
+TODO
+
+- Complete RegularExpression match
+
+- Sort out flags in argparser

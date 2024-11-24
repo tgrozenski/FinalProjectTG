@@ -1,9 +1,9 @@
 # Final Project Report
 
-* Student Name:
-* Github Username:
-* Semester:
-* Course:
+* Student Name: Tyler Grozenski
+* Github Username: tgrozenski
+* Semester: Fall 2024
+* Course: CS5001
 
 
 

@@ -30,7 +30,7 @@ class searcher:
        
         Returns:
         None if no result found,
-        else it returns the result
+        else it returns the result object
         """
         index = 0
         pattern_len = len(pattern)
@@ -41,14 +41,68 @@ class searcher:
         return None
 
 
+    def regex_expression_match(self, line: str, pattern: str, line_number: int) -> result:
+        """
+        Returns a result object from a regular expression
+
+        args:
+        line: str, A stripped line to be compared
+        pattern: str, the search term
+        line_number, the current line number necessary for the result object
+
+        Examples:
+        >>> regex_expression_match("hey this is a test line cookies", 'hi|hello|hey', 4)
+        'Found result "hey" from pattern "'hi|hello|hey'" on line: 4 index: 0 match percentage: 1.0'
+        >>> regex_expression_match("This is a test line COOKIE", 'cokies', 4)
+        None
+        >>> regex_expression_match("This is a test line that is hArDeR", 'harder', 4)
+        'Found result "hArdeR" from pattern "harder" on line: 4 match percentage: 1.0'
+       
+        Returns:
+        None if no result found,
+        else it returns the result object
+        """ 
+        match = re.search(pattern, line)
+
+        if match == None:
+            return None
+
+        match_percentage = str(round((len(match[0]) / len(pattern) * 100))) + '%'
+
+        return result(match[0], pattern, match_percentage, match.span()[0], line_number)
+
+
     def ignore_case_match(self, line: str, pattern: str, line_number: int) -> result:
-        print(potential_match)
-        potential_match: result = self.match_line(pattern.casefold(), line.casefold(), line_number)
+        """
+        Returns a result object if a case insensitive match is found, else returns None 
+
+        args:
+        line: str, A stripped line to be compared
+        pattern: str, the search term
+        line_number, the current line number necessary for the result object
+
+        Examples:
+        >>> ignore_case_match("This is a test line cookies", 'COOKIES', 4)
+        'Found result "cookies" from pattern "COOKIE" on line: 4 match percentage: 1.0'
+        >>> ignore_case_match("This is a test line COOKIE", 'cokies', 4)
+        None
+        >>> ignore_case_match("This is a test line that is hArDeR", 'harder', 4)
+        'Found result "hArdeR" from pattern "harder" on line: 4 match percentage: 1.0'
+       
+        Returns:
+        None if no result found,
+        else it returns the result object
+        """
+
+        potential_match: result = self.match_line(line.casefold(), pattern.casefold(), line_number)
+
         if potential_match == None:
             return None
 
         potential_match.pattern = pattern
-        potential_match.found_str = line[potential_match.line_index: len(pattern)]
+        start_of_str = potential_match.line_index
+        end_of_str = potential_match.line_index + len(pattern)
+        potential_match.found_str = line[start_of_str : end_of_str]
 
         return potential_match
 
