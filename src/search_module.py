@@ -67,9 +67,48 @@ class searcher:
         if match == None:
             return None
 
-        match_percentage = str(round((len(match[0]) / len(pattern) * 100))) + '%'
+        return result(match[0], pattern, self.calculate_match_percentage(match[0], pattern), 
+                        line_number, match.span()[0])
 
-        return result(match[0], pattern, match_percentage, match.span()[0], line_number)
+
+    def calculate_match_percentage(self, match: str , pattern: str) -> str:
+        """
+        returns the match percentage, the length of all characters present in both the match
+        and pattern divided by the pattern filtered down to only alphanumeric characters. 
+
+        Args:
+        match: str, the string match found
+        pattern: str, the string pattern used to find the match
+
+        Examples:
+        >>> calculate_match_percentage('he lives in gotham his name is batman', 'batman')
+        100%
+        >>> calculate_match_percentage('catsanddogs', 'cats')
+        100%
+        >>> calculate_match_percentage('12cats12', 'cats')
+        100%
+        >>> calculate_match_percentage('12ca103', 'cats')
+        50%
+        >>> calculate_match_percentage('cats', '!@#$!cats&dogs!@#@$@@')
+        50%
+
+
+        Returns:
+        A percentage formatted as a string
+        
+        """
+        match = match.casefold()
+        pattern = pattern.casefold()
+
+        filtered_match_len: int = len([x for x in match if x in pattern])
+        filtered_pattern_len: int = len([x for x in pattern if x.isalnum()])
+
+        result = round((filtered_match_len / filtered_pattern_len) * 100)
+
+        if result >= 100:
+            return '100%'
+
+        return str(result) + '%'
 
 
     def ignore_case_match(self, line: str, pattern: str, line_number: int) -> result:
