@@ -12,7 +12,7 @@ RESULT_TEMPLATE = 'Found result "{}" from pattern "{}" on line: {} index: {} mat
 
 class TestSearch(unittest.TestCase):
     def test_match_line(self):
-        expected = RESULT_TEMPLATE.format('123', '123', 4, 20, 1.0)
+        expected = RESULT_TEMPLATE.format('123', '123', 4, 20, '100%')
         actual = search.match_line("This is a test line 123", '123', 4)
         self.assertEqual(str(actual), expected)
 
@@ -20,13 +20,13 @@ class TestSearch(unittest.TestCase):
         expected = None
         self.assertEqual(actual, expected)
 
-        expected = RESULT_TEMPLATE.format('cookies', 'cookies', 1, 30, 1.0)
+        expected = RESULT_TEMPLATE.format('cookies', 'cookies', 1, 30, '100%')
         actual = search.match_line('hello world i definitely love cookies', 'cookies', 1)
         self.assertEqual(str(actual), expected)
 
 
     def test_ignore_case_match(self):
-        expected = RESULT_TEMPLATE.format('cookies', 'COOKIES', 1, 30, 1.0)
+        expected = RESULT_TEMPLATE.format('cookies', 'COOKIES', 1, 30, '100%')
         actual = search.ignore_case_match('hello world i definitely love cookies', 'COOKIES', 1)
         self.assertEqual(str(actual), expected)
 
@@ -35,7 +35,7 @@ class TestSearch(unittest.TestCase):
         self.assertEqual(actual, expected)
 
         actual = search.ignore_case_match("This is a test that is more hARdEr", 'harder', 4)
-        expected = RESULT_TEMPLATE.format('hARdEr', 'harder', 4, 28, 1.0)
+        expected = RESULT_TEMPLATE.format('hARdEr', 'harder', 4, 28, '100%')
         self.assertEqual(str(actual), expected)
 
 
@@ -49,24 +49,20 @@ class TestSearch(unittest.TestCase):
         self.assertEqual(str(actual), expected)
 
         actual = search.regex_expression_match('my Favorite videoGAME is minecraft _____', 'mine.....', 4)
-        expected = RESULT_TEMPLATE.format('minecraft', 'mine.....', 4, 25, '100%')
+        expected = RESULT_TEMPLATE.format('minecraft', 'mine.....', 4, 25, '44%')
         self.assertEqual(str(actual), expected)
 
     
     def test_calculate_match_percentage(self):
-        actual = search.calculate_match_percentage('he lives in gotham his name is batman', 'batman')
+        actual = search.calculate_match_percentage('batman', 'batman')
         expected = '100%'
         self.assertEqual(actual, expected)
 
-        actual = search.calculate_match_percentage('catsanddogs', 'cats')
-        expected = '100%'
+        actual = search.calculate_match_percentage('catsdogs', 'cats')
+        expected = '50%'
         self.assertEqual(actual, expected)
 
-        actual = search.calculate_match_percentage('12cats12', 'cats')
-        expected = '100%'
-        self.assertEqual(actual, expected)
-
-        actual = search.calculate_match_percentage('12ca103', 'cats')
+        actual = search.calculate_match_percentage('cats', 'ca..')
         expected = '50%'
         self.assertEqual(actual, expected)
 
@@ -78,9 +74,13 @@ class TestSearch(unittest.TestCase):
         expected = '33%'
         self.assertEqual(actual, expected)
 
-        actual = search.calculate_match_percentage('D', 'dogsand')
-        expected = '14%'
+        actual = search.calculate_match_percentage('DOG', 'dogsand')
+        expected = '43%'
         self.assertEqual(actual, expected)
+
+    def test_fuzzy_match(self):
+        print()
+        search.fuzzy_match('helloo hell heldol cats dogs hel hedsk HELLO ', 'hello', 1)
 
 
 if __name__ == "__main__":

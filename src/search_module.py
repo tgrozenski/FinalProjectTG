@@ -1,8 +1,11 @@
 import re
+import math
 from result_module import result
 
+from Levenshtein import distance
+
 result_list: list[result] = []
-PERFECT_MATCH: float = 1.0
+PERFECT_MATCH: str = '100%'
 
 class searcher:
     def __init__(self) -> None:
@@ -36,6 +39,7 @@ class searcher:
         None if no result found,
         else it returns the result object
         """
+        # rewrite using .split()
         index = 0
         pattern_len = len(pattern)
         while index <= len(line) - pattern_len:
@@ -110,42 +114,71 @@ class searcher:
         return potential_match
 
 
+    def fuzzy_match(self, line: str, pattern: str, line_number: int) -> result:
+
+        word_list: list[str] = line.split()
+
+        for word in word_list:
+            word.strip()
+            dist: int = distance(word, pattern, score_cutoff=math.floor(len(word) / 2))
+            if dist <= math.floor(len(word) / 2):
+                print("This is a match", dist, word, pattern, "Match Percentage", self.calculate_fuzzy_match(word, pattern))
+    
+
+    def calculate_fuzzy_match(self, match: str, pattern: str) -> str:
+        print('calculating for words', match, pattern)
+        greater, lesser = '', ''
+        if len(match) >= len(pattern):
+            greater = match
+            lesser = pattern
+        else: 
+            greater = pattern
+            lesser = match
+
+        same_score = 0
+        for i in range(len(lesser)):
+            if lesser[i] == greater[i]:
+                same_score += 1
+
+        print(same_score, len(greater)) 
+        return str(round((same_score / len(greater)) * 100)) + '%'
+
+
+
     def calculate_match_percentage(self, match: str , pattern: str) -> str:
         """
-        returns the match percentage, the length of all characters present in both the match
-        and pattern divided by the pattern filtered down to only alphanumeric characters. 
+        Calculates how close the pattern and match are in length filtered down to only alphanumeric characters
 
         Args:
         match: str, the string match found
         pattern: str, the string pattern used to find the match
 
         Examples:
-        >>> calculate_match_percentage('he lives in gotham his name is batman', 'batman')
+        >>> calculate_match_percentage('batman', 'batman')
         100%
         >>> calculate_match_percentage('catsanddogs', 'cats')
-        100%
-        >>> calculate_match_percentage('12cats12', 'cats')
-        100%
-        >>> calculate_match_percentage('12ca103', 'cats')
+        36%
+        >>> calculate_match_percentage('12cats12', '...cats....')
         50%
+        >>> calculate_match_percentage('12ca103', '..ca...')
+        29%
         >>> calculate_match_percentage('cats', '!@#$!cats&dogs!@#@$@@')
         50%
 
-
         Returns:
-        A percentage formatted as a string
+        A percentage in string formatted
         
         """
-        match = match.casefold()
+        match_len = len(match)
         pattern = pattern.casefold()
+        pattern_len = len([char for char in pattern if char.isalnum()])
 
-        filtered_match_len: int = len([x for x in match if x in pattern])
-        filtered_pattern_len: int = len([x for x in pattern if x.isalnum()])
-
-        result = round((filtered_match_len / filtered_pattern_len) * 100)
-
-        if result >= 100:
-            return '100%'
+        if match_len < pattern_len:
+            result = round((match_len / pattern_len) * 100)
+        elif pattern_len < match_len:
+            result = round((pattern_len / match_len) * 100)
+        else:
+            result = 100
 
         return str(result) + '%'
 

@@ -1,5 +1,14 @@
 TODO
 
-- regex is displaying 100% match every time for some reason
+data
+
+- Write docstring for fuzzy finding algorithm and calculate_fuzzy
+
+https://rapidfuzz.github.io/Levenshtein/installation.html
+- add to dependencies
+
+- consider merging the two calculate_fuzzy and calculate_match_percentage, add optional param for filtering non alphanumeric
+
+- add flag for fuzzy and usage in argparser
 
 - Work out some kinks in main
