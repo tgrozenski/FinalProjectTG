@@ -13,6 +13,10 @@ class searcher:
         return result_list
 
 
+    def append_result_list(self, string: str) -> None:
+        result_list.append(string)
+
+
     def match_line(self, line: str, pattern: str, line_number: int) -> result:
         """
         Returns a result object if an exact match is found, else returns an None 
@@ -68,7 +72,42 @@ class searcher:
             return None
 
         return result(match[0], pattern, self.calculate_match_percentage(match[0], pattern), 
-                        line_number, match.span()[0])
+                            line_number, match.span()[0])
+
+
+    def ignore_case_match(self, line: str, pattern: str, line_number: int) -> result:
+        """
+        Returns a result object if a case insensitive match is found, else returns None 
+
+        args:
+        line: str, A stripped line to be compared
+        pattern: str, the search term
+        line_number, the current line number necessary for the result object
+
+        Examples:
+        >>> ignore_case_match("This is a test line cookies", 'COOKIES', 4)
+        'Found result "cookies" from pattern "COOKIE" on line: 4 match percentage: 1.0'
+        >>> ignore_case_match("This is a test line COOKIE", 'cokies', 4)
+        None
+        >>> ignore_case_match("This is a test line that is hArDeR", 'harder', 4)
+        'Found result "hArdeR" from pattern "harder" on line: 4 match percentage: 1.0'
+       
+        Returns:
+        None if no result found,
+        else it returns the result object
+        """
+
+        potential_match: result = self.match_line(line.casefold(), pattern.casefold(), line_number)
+
+        if potential_match == None:
+            return None
+
+        potential_match.pattern = pattern
+        start_of_str = potential_match.line_index
+        end_of_str = potential_match.line_index + len(pattern)
+        potential_match.found_str = line[start_of_str : end_of_str]
+
+        return potential_match
 
 
     def calculate_match_percentage(self, match: str , pattern: str) -> str:
@@ -111,41 +150,6 @@ class searcher:
         return str(result) + '%'
 
 
-    def ignore_case_match(self, line: str, pattern: str, line_number: int) -> result:
-        """
-        Returns a result object if a case insensitive match is found, else returns None 
-
-        args:
-        line: str, A stripped line to be compared
-        pattern: str, the search term
-        line_number, the current line number necessary for the result object
-
-        Examples:
-        >>> ignore_case_match("This is a test line cookies", 'COOKIES', 4)
-        'Found result "cookies" from pattern "COOKIE" on line: 4 match percentage: 1.0'
-        >>> ignore_case_match("This is a test line COOKIE", 'cokies', 4)
-        None
-        >>> ignore_case_match("This is a test line that is hArDeR", 'harder', 4)
-        'Found result "hArdeR" from pattern "harder" on line: 4 match percentage: 1.0'
-       
-        Returns:
-        None if no result found,
-        else it returns the result object
-        """
-
-        potential_match: result = self.match_line(line.casefold(), pattern.casefold(), line_number)
-
-        if potential_match == None:
-            return None
-
-        potential_match.pattern = pattern
-        start_of_str = potential_match.line_index
-        end_of_str = potential_match.line_index + len(pattern)
-        potential_match.found_str = line[start_of_str : end_of_str]
-
-        return potential_match
-
-
     def iterate_file(self, file: str, pattern: str, action: str) -> None:
         """
         Iterates over a given file, impure function because it uses the
@@ -161,11 +165,12 @@ class searcher:
         None
         """
         line_count = 1
-        selected_method = self.__getattribute__(action)
         # https://stackoverflow.com/questions/2283210/python-function-pointer
+        selected_method = self.__getattribute__(action)
         with open(file) as user_file:
             for line in user_file:
                 found = selected_method(line.strip(), pattern, line_count)
                 if found != None:
                     result_list.append(found)
+                    print('found on LINE', line)
                 line_count += 1

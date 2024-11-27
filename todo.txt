@@ -1,3 +1,5 @@
 TODO
 
-- Sort out flags in argparser
+- regex is displaying 100% match every time for some reason
+
+- Work out some kinks in main
