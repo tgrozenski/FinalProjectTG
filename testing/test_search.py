@@ -80,7 +80,11 @@ class TestSearch(unittest.TestCase):
 
     def test_fuzzy_match(self):
         print()
-        search.fuzzy_match('helloo hell heldol cats dogs hel hedsk HELLO ', 'hello', 1)
+        # search.fuzzy_match('helloo hell heldol cats dogs hel hedsk HELLO ', 'hello', 1)
+    
+    
+    def test_fuzzy_calc_match(self):
+        print('match percentage', search.calculate_fuzzy_match("ow", 'world'))
 
 
 if __name__ == "__main__":

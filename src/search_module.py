@@ -126,7 +126,49 @@ class searcher:
     
 
     def calculate_fuzzy_match(self, match: str, pattern: str) -> str:
-        print('calculating for words', match, pattern)
+        """
+        reads pattern into memory as a dictionary, calculates the average of the 
+        percentage of shared characters and number of characters in order 
+
+        Args:
+        the match to be compared, string
+        the pattern to be compared, string
+
+        Examples:   
+        >>> calculate_fuzzy_match('hello', 'hello')
+        '100%'
+        >>> calculate_fuzzy_match('olleh', 'hello')
+        '60%'
+        >>> calculate_fuzzy_match('ld', 'world')
+        '40%'
+        >>> calculate_fuzzy_match('dl', 'world')
+        '30%'
+        >>> calculate_fuzzy_match('x', 'world')
+        '0%'
+
+        Returns:
+        the match percentage taking into account the order and shared characters 
+        """
+        # shared character score
+        pattern_dict: dict = {}
+        for char in pattern:
+            if char in pattern_dict.keys():
+                pattern_dict[char] += 1
+            else:
+                pattern_dict[char] = 1
+
+        score = 0
+        for char in match:
+            if char in pattern_dict.keys():
+                pattern_dict[char] -= 1
+
+        for value in pattern_dict.values():
+            score += value
+        
+        pattern_len = len(pattern)
+        sameness_score = (pattern_len - abs(score)) / pattern_len
+
+        # character order score
         greater, lesser = '', ''
         if len(match) >= len(pattern):
             greater = match
@@ -135,14 +177,20 @@ class searcher:
             greater = pattern
             lesser = match
 
-        same_score = 0
-        for i in range(len(lesser)):
-            if lesser[i] == greater[i]:
-                same_score += 1
+        order, lesser_index = 0, 0
+        for i in range(len(greater)):
+            if lesser_index == len(lesser):
+                break
+            if lesser[lesser_index] == greater[i]:
+                order += 1
+                lesser_index += 1
 
-        print(same_score, len(greater)) 
-        return str(round((same_score / len(greater)) * 100)) + '%'
-
+        order_score = order / len(greater)
+        avg = (sameness_score + order_score) / 2
+        if avg == 1.0:
+            return '100%'
+        else:
+            return str(round(avg * 100)) + '%'
 
 
     def calculate_match_percentage(self, match: str , pattern: str) -> str:
