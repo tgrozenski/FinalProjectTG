@@ -7,7 +7,7 @@ data
 https://rapidfuzz.github.io/Levenshtein/installation.html
 - add to dependencies
 
-- consider merging the two calculate_fuzzy and calculate_match_percentage, add optional param for filtering non alphanumeric
+- consider merging the two calculate_fuzzy and calculate_match_percentage, 
 
 - add flag for fuzzy and usage in argparser
 

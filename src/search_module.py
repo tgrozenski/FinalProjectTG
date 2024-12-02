@@ -115,17 +115,34 @@ class searcher:
 
 
     def fuzzy_match(self, line: str, pattern: str, line_number: int) -> result:
-
+        """
+        Args: 
+        line: str, the line to be searched for a fuzzy match
+        pattern: str, the pattern to be compared to each word
+        line_number: int, to be added into the result object
+        """
         word_list: list[str] = line.split()
+        # filter non alphanum characters from the pattern (in case of regex)
+        filtered_pattern = len([char for char in pattern if char.isalnum()])
 
         for word in word_list:
             word.strip()
             dist: int = distance(word, pattern, score_cutoff=math.floor(len(word) / 2))
             if dist <= math.floor(len(word) / 2):
-                print("This is a match", dist, word, pattern, "Match Percentage", self.calculate_fuzzy_match(word, pattern))
+                result(word, pattern, self.calculate_match(word, filtered_pattern), 
+                        line_number, self.get_index_from_line(line, word))
     
 
-    def calculate_fuzzy_match(self, match: str, pattern: str) -> str:
+    def get_index_from_line(self, line: str, word: str) -> int:
+        """
+        Takes a line and returns the character location of a pattern on the line
+        """
+        for i in range(len(line)):
+            if word == line[i: i + len(word)]:
+                return i
+
+
+    def calculate_match(self, match: str, pattern: str) -> str:
         """
         reads pattern into memory as a dictionary, calculates the average of the 
         percentage of shared characters and number of characters in order 
@@ -135,20 +152,23 @@ class searcher:
         the pattern to be compared, string
 
         Examples:   
-        >>> calculate_fuzzy_match('hello', 'hello')
+        >>> calculate_match('hello', 'hello')
         '100%'
-        >>> calculate_fuzzy_match('olleh', 'hello')
+        >>> calculate_match('olleh', 'hello')
         '60%'
-        >>> calculate_fuzzy_match('ld', 'world')
+        >>> calculate_match('ld', 'world')
         '40%'
-        >>> calculate_fuzzy_match('dl', 'world')
+        >>> calculate_match('dl', 'world')
         '30%'
-        >>> calculate_fuzzy_match('x', 'world')
+        >>> calculate_match('x', 'world')
         '0%'
 
         Returns:
         the match percentage taking into account the order and shared characters 
         """
+        match = match.casefold()
+        pattern = pattern.casefold()
+
         # shared character score
         pattern_dict: dict = {}
         for char in pattern:
