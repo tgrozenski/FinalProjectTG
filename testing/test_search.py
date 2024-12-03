@@ -54,11 +54,17 @@ class TestSearch(unittest.TestCase):
 
     
     def test_fuzzy_match(self):
-        print()
-        # search.fuzzy_match('helloo hell heldol cats dogs hel hedsk HELLO ', 'hello', 1)
+        self.assertEqual(str(search.fuzzy_match('SP@@@m', 'spam', 1)), 
+                         RESULT_TEMPLATE.format('SP@@@m', 'spam', 1, 0, '54%'))
+        self.assertEqual(str(search.fuzzy_match("hey hi holle ", "hello", 5)), 
+                         RESULT_TEMPLATE.format('holle', 'hello', 5, 7, '70%'))
+        self.assertEqual(str(search.fuzzy_match("i love ttles", "TURTLES", 5)), 
+                         RESULT_TEMPLATE.format('ttles', 'TURTLES', 5, 7, '71%'))
+        self.assertEqual(str(search.fuzzy_match("my favorite pet is dogs", "dogs", 5)), 
+                         RESULT_TEMPLATE.format('dogs', 'dogs', 5, 19, '100%'))
     
     
-    def test_fuzzy_calc_match(self):
+    def test_calc_match(self):
         self.assertEqual(search.calculate_match('hello', 'hello'), '100%')
         self.assertEqual(search.calculate_match('olleh', 'hello'), '60%')
         self.assertEqual(search.calculate_match('ld', 'world'), '40%')

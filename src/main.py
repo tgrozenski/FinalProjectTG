@@ -6,6 +6,7 @@ import argparse
 MATCH_ACTION = 'match_line'
 REGEX_ACTION = 'regex_expression_match'
 IGNORE_CASE_ACTION = 'ignore_case_match'
+FUZZY_ACTION = 'fuzzy_match'
 
 def get_args() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -17,6 +18,8 @@ def get_args() -> argparse.ArgumentParser:
     parser.add_argument('-i', '--ignore_case',
                     action='store_true')
     parser.add_argument('-e', '--regex',
+                    action='store_true')
+    parser.add_argument('-z', '--fuzzy',
                     action='store_true')
     parser.add_argument('-f', '--filename',
                     action='store')           
@@ -40,14 +43,20 @@ def main():
     args = get_args()
     my_searcher = searcher()
 
-    if args.regex == True and args.ignore_case == True:
-        raise UserWarning('you cannot have regex and ignore case, choose one or the other')
-
+    args_count = 0
     action = MATCH_ACTION
     if args.regex == True:
         action = REGEX_ACTION
-    elif args.ignore_case == True:
+        args_count += 1
+    if args.ignore_case == True:
         action = IGNORE_CASE_ACTION 
+        args_count += 1
+    if args.fuzzy == True:
+        action = FUZZY_ACTION
+        args_count += 1
+
+    if args_count > 1:
+        raise UserWarning('you cannot have more than one of the following options: regex, case insensitive')
 
     pattern = args.pattern
 
@@ -60,6 +69,7 @@ def main():
         iterate_stdin(my_searcher, action, pattern)
     elif args.filename != None: 
         my_searcher.iterate_file(args.filename, pattern, action)
+        print('iterating file with the following action', action)
     else: 
         raise UserWarning('Must provide input to search')
         

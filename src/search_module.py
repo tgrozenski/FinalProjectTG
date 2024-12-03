@@ -116,21 +116,42 @@ class searcher:
 
     def fuzzy_match(self, line: str, pattern: str, line_number: int) -> result:
         """
+        Uses distance method from the Levenshtein module, only returns words with a score
+        of under the floored length of the word divided by 2, is case insensitive by default
+
         Args: 
         line: str, the line to be searched for a fuzzy match
         pattern: str, the pattern to be compared to each word
         line_number: int, to be added into the result object
+
+        Examples:
+        >>> fuzzy_match("hey hi olleh ", "x", 10)
+        None
+        >>> fuzzy_match('SP@@@m', 'spam', 1)
+        'Found result "SP@@@m" from pattern "spam" on line: 1 match percentage: 54%'
+        >>> fuzzy_match('hey hi holle ', 'hello', 1)
+        'Found result "holle" from pattern "hello" on line: 1 match percentage: 70%'
+        ""
+
+        Returns:
+        A result object containing the results and the matching score calculated by calculate_match()
         """
-        word_list: list[str] = line.split()
+        lower_line = line.casefold()
+        lower_pattern = pattern.casefold()
+
         # filter non alphanum characters from the pattern (in case of regex)
-        filtered_pattern = len([char for char in pattern if char.isalnum()])
+        filtered_pattern = [char for char in lower_pattern if char.isalnum()]
+        word_list: list[str] = lower_line.split()
 
         for word in word_list:
-            word.strip()
-            dist: int = distance(word, pattern, score_cutoff=math.floor(len(word) / 2))
-            if dist <= math.floor(len(word) / 2):
-                result(word, pattern, self.calculate_match(word, filtered_pattern), 
-                        line_number, self.get_index_from_line(line, word))
+            score_cutoff = math.floor(len(word) / 2)
+            score: int = distance(word, lower_pattern, score_cutoff=score_cutoff)
+            if score <= score_cutoff:
+                word_index = self.get_index_from_line(lower_line, word)
+                match_percentage = self.calculate_match(word, filtered_pattern)
+                if int(match_percentage[:-1]) > 50:
+                    return result(line[word_index:word_index + len(word)], pattern, match_percentage, 
+                            line_number, word_index)
     
 
     def get_index_from_line(self, line: str, word: str) -> int:
@@ -166,9 +187,6 @@ class searcher:
         Returns:
         the match percentage taking into account the order and shared characters 
         """
-        match = match.casefold()
-        pattern = pattern.casefold()
-
         # shared character score
         pattern_dict: dict = {}
         for char in pattern:

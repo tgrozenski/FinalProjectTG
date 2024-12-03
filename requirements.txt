@@ -10,3 +10,6 @@
 # pandas
 # flask
 # requests  
+
+# the documentation for this module is located https://rapidfuzz.github.io/Levenshtein/installation.html
+levenshtein
