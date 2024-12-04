@@ -291,5 +291,4 @@ class searcher:
                 found = selected_method(line.strip(), pattern, line_count)
                 if found != None:
                     result_list.append(found)
-                    print('found on LINE', line)
                 line_count += 1

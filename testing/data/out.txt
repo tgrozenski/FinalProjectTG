@@ -1,0 +1,30 @@
+--Beginning of Testing from fuzzy--
+Found result "calfrnoia" from pattern "california" on line: 19 index: 40 match percentage: 75%
+Found result "calfrnoia" from pattern "california" on line: 26 index: 40 match percentage: 75%
+Found result "explicabo." from pattern "explicative" on line: 3 index: 69 match percentage: 64%
+Found result "exercitationem" from pattern "explicative" on line: 9 index: 15 match percentage: 53%
+Found result "explicabo." from pattern "explicative" on line: 16 index: 69 match percentage: 64%
+Found result "explicative" from pattern "explicative" on line: 20 index: 42 match percentage: 100%
+Found result "exercitationem" from pattern "explicative" on line: 22 index: 15 match percentage: 53%
+Found result "exlictive," from pattern "explicative" on line: 26 index: 29 match percentage: 82%
+Found result "coagulation" from pattern "coagulation" on line: 13 index: 0 match percentage: 100%
+Found result "cogulaion," from pattern "coagulation" on line: 26 index: 18 match percentage: 82%
+--End of Testing from fuzzy--
+
+--Beginning of Testing from match--
+Found result "cookies" from pattern "cookies" on line: 6 index: 0 match percentage: 100%
+Found result "cookies" from pattern "cookies" on line: 28 index: 18 match percentage: 100%
+Found result "ice cream" from pattern "ice cream" on line: 17 index: 0 match percentage: 100%
+Found result "ice cream" from pattern "ice cream" on line: 28 index: 27 match percentage: 100%
+Found result "PATTERN123" from pattern "PATTERN123" on line: 23 index: 19 match percentage: 100%
+Found result "PATTERN123" from pattern "PATTERN123" on line: 28 index: 38 match percentage: 100%
+--End of Testing from match--
+
+--Beginning of testing from ignore case--
+Found result "cookie" from pattern "COOKIE" on line: 15 index: 0 match percentage: 100%
+Found result "cookie" from pattern "COOKIE" on line: 19 index: 18 match percentage: 100%
+Found result "IcE CrEaM" from pattern "ice cream" on line: 17 index: 0 match percentage: 100%
+Found result "IcE CrEaM" from pattern "ice cream" on line: 19 index: 26 match percentage: 100%
+Found result "TEA" from pattern "tea" on line: 5 index: 41 match percentage: 100%
+Found result "TEA" from pattern "tea" on line: 19 index: 37 match percentage: 100%
+--End of Testing from ignore case--

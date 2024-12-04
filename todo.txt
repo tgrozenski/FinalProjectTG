@@ -1,5 +1,3 @@
 TODO
 
-- add flag for fuzzy and usage in argparser
-
 - Work out some kinks in main

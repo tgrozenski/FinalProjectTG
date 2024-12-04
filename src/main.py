@@ -13,8 +13,6 @@ def get_args() -> argparse.ArgumentParser:
                         prog='TylerFinder',
                         description='Finds a pattern in a file',
                         epilog='Text at the bottom of help')
-    parser.add_argument('-v', '--verbose',  # optional arguments
-                    action='store_true')
     parser.add_argument('-i', '--ignore_case',
                     action='store_true')
     parser.add_argument('-e', '--regex',
@@ -69,7 +67,6 @@ def main():
         iterate_stdin(my_searcher, action, pattern)
     elif args.filename != None: 
         my_searcher.iterate_file(args.filename, pattern, action)
-        print('iterating file with the following action', action)
     else: 
         raise UserWarning('Must provide input to search')
         
