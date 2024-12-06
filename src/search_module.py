@@ -73,7 +73,6 @@ class searcher:
 
         if match == None:
             return None
-
         return result(match[0], pattern, self.calculate_match_percentage(match[0], pattern), 
                             line_number, match.span()[0])
 

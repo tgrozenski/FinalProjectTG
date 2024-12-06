@@ -2,6 +2,7 @@ import unittest
 import os
 import sys
 
+# got this line from past homeworks
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 from search_module import searcher
@@ -76,32 +77,6 @@ class TestSearch(unittest.TestCase):
         self.assertEqual(0, search.get_index_from_line('word4', 'word4'))
         self.assertEqual(5, search.get_index_from_line('01234word4', 'word4'))
         self.assertEqual(10, search.get_index_from_line('0123456789word4', 'word4'))
-
-
-    # def test_calculate_match_percentage(self):
-    #     actual = search.calculate_match_percentage('batman', 'batman')
-    #     expected = '100%'
-    #     self.assertEqual(actual, expected)
-
-    #     actual = search.calculate_match_percentage('catsdogs', 'cats')
-    #     expected = '50%'
-    #     self.assertEqual(actual, expected)
-
-    #     actual = search.calculate_match_percentage('cats', 'ca..')
-    #     expected = '50%'
-    #     self.assertEqual(actual, expected)
-
-    #     actual = search.calculate_match_percentage('cats', '!@#$!cats&dogs!@#@$@@')
-    #     expected = '50%'
-    #     self.assertEqual(actual, expected)
-
-    #     actual = search.calculate_match_percentage('D', 'dog')
-    #     expected = '33%'
-    #     self.assertEqual(actual, expected)
-
-    #     actual = search.calculate_match_percentage('DOG', 'dogsand')
-    #     expected = '43%'
-    #     self.assertEqual(actual, expected)
 
 if __name__ == "__main__":
     unittest.main()

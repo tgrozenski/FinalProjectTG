@@ -33,7 +33,6 @@ def iterate_stdin(my_searcher, action: str, pattern: str):
         found = method(line, pattern, line_count)
         if found != None:
             my_searcher.append_result_list(found)
-            print("Result in this LINE:", line)
         line_count += 1
 
 
