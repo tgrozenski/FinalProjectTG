@@ -7,22 +7,20 @@ from Levenshtein import distance
 result_list: list[result] = []
 PERFECT_MATCH: str = '100%'
 
+
 class searcher:
     def __init__(self) -> None:
         pass
 
-
     def get_result_list(self) -> list:
         return result_list
-
 
     def append_result_list(self, string: str) -> None:
         result_list.append(string)
 
-
     def match_line(self, line: str, pattern: str, line_number: int) -> result:
         """
-        Returns a result object if an exact match is found, else returns an None 
+        Returns a result object if an exact match is found, else returns an None
 
         args:
         line: str, A stripped line to be compared
@@ -33,8 +31,8 @@ class searcher:
         >>> match_line("This is a test line 123", '123', 4)
         'Found result "123" from pattern "123" on line: 4 match percentage: 1.0'
         >>> match_line("This is a test line 123", 'cookies', 4)
+
         None
-       
         Returns:
         None if no result found,
         else it returns the result object
@@ -46,7 +44,6 @@ class searcher:
                 return result(pattern, pattern, PERFECT_MATCH, line_number, index)
             index += 1
         return None
-
 
     def regex_expression_match(self, line: str, pattern: str, line_number: int) -> result:
         """
@@ -64,22 +61,20 @@ class searcher:
         None
         >>> regex_expression_match("This is a test line that is hArDeR", 'harder', 4)
         'Found result "hArdeR" from pattern "harder" on line: 4 match percentage: 1.0'
-       
+
         Returns:
         None if no result found,
         else it returns the result object
-        """ 
+        """
         match = re.search(pattern, line)
 
-        if match == None:
+        if match is None:
             return None
-        return result(match[0], pattern, self.calculate_match_percentage(match[0], pattern), 
-                            line_number, match.span()[0])
-
+        return result(match[0], pattern, self.calculate_match_percentage(match[0], pattern), line_number, match.span()[0])
 
     def ignore_case_match(self, line: str, pattern: str, line_number: int) -> result:
         """
-        Returns a result object if a case insensitive match is found, else returns None 
+        Returns a result object if a case insensitive match is found, else returns None
 
         args:
         line: str, A stripped line to be compared
@@ -93,7 +88,7 @@ class searcher:
         None
         >>> ignore_case_match("This is a test line that is hArDeR", 'harder', 4)
         'Found result "hArdeR" from pattern "harder" on line: 4 match percentage: 1.0'
-       
+
         Returns:
         None if no result found,
         else it returns the result object
@@ -101,23 +96,22 @@ class searcher:
 
         potential_match: result = self.match_line(line.casefold(), pattern.casefold(), line_number)
 
-        if potential_match == None:
+        if potential_match is None:
             return None
 
         potential_match.pattern = pattern
         start_of_str = potential_match.line_index
         end_of_str = potential_match.line_index + len(pattern)
-        potential_match.found_str = line[start_of_str : end_of_str]
+        potential_match.found_str = line[start_of_str:end_of_str]
 
         return potential_match
-
 
     def fuzzy_match(self, line: str, pattern: str, line_number: int) -> result:
         """
         Uses distance method from the Levenshtein module, only returns words with a score
         of under the floored length of the word divided by 2, is case insensitive by default
 
-        Args: 
+        Args:
         line: str, the line to be searched for a fuzzy match
         pattern: str, the pattern to be compared to each word
         line_number: int, to be added into the result object
@@ -148,9 +142,7 @@ class searcher:
                 word_index = self.get_index_from_line(lower_line, word)
                 match_percentage = self.calculate_match(word, filtered_pattern)
                 if int(match_percentage[:-1]) > 50:
-                    return result(line[word_index:word_index + len(word)], pattern, match_percentage, 
-                            line_number, word_index)
-    
+                    return result(line[word_index:word_index + len(word)], pattern, match_percentage, line_number, word_index)
 
     def get_index_from_line(self, line: str, word: str) -> int:
         """
@@ -160,17 +152,16 @@ class searcher:
             if word == line[i: i + len(word)]:
                 return i
 
-
     def calculate_match(self, match: str, pattern: str) -> str:
         """
-        reads pattern into memory as a dictionary, calculates the average of the 
-        percentage of shared characters and number of characters in order 
+        reads pattern into memory as a dictionary, calculates the average of the
+        percentage of shared characters and number of characters in order
 
         Args:
         the match to be compared, string
         the pattern to be compared, string
 
-        Examples:   
+        Examples:
         >>> calculate_match('hello', 'hello')
         '100%'
         >>> calculate_match('olleh', 'hello')
@@ -183,7 +174,7 @@ class searcher:
         '0%'
 
         Returns:
-        the match percentage taking into account the order and shared characters 
+        the match percentage taking into account the order and shared characters
         """
         # shared character score
         pattern_dict: dict = {}
@@ -200,7 +191,7 @@ class searcher:
 
         for value in pattern_dict.values():
             score += value
-        
+
         pattern_len = len(pattern)
         sameness_score = (pattern_len - abs(score)) / pattern_len
 
@@ -209,7 +200,7 @@ class searcher:
         if len(match) >= len(pattern):
             greater = match
             lesser = pattern
-        else: 
+        else:
             greater = pattern
             lesser = match
 
@@ -228,8 +219,7 @@ class searcher:
         else:
             return str(round(avg * 100)) + '%'
 
-
-    def calculate_match_percentage(self, match: str , pattern: str) -> str:
+    def calculate_match_percentage(self, match: str, pattern: str) -> str:
         """
         Calculates how close the pattern and match are in length filtered down to only alphanumeric characters
 
@@ -251,7 +241,7 @@ class searcher:
 
         Returns:
         A percentage in string formatted
-        
+
         """
         match_len = len(match)
         pattern = pattern.casefold()
@@ -266,19 +256,18 @@ class searcher:
 
         return str(result) + '%'
 
-
     def iterate_file(self, file: str, pattern: str, action: str) -> None:
         """
         Iterates over a given file, impure function because it uses the
         getattribute method to call the correct search method based on the
-        action string that gets passed in. Keeps track of line number. 
+        action string that gets passed in. Keeps track of line number.
 
         args:
-        file: str, the file to be read and 
+        file: str, the file to be read and
         pattern: str, the search query
         action: str, the action method as defined in main.py
 
-        returns: 
+        returns:
         None
         """
         line_count = 1
@@ -287,6 +276,6 @@ class searcher:
         with open(file) as user_file:
             for line in user_file:
                 found = selected_method(line.strip(), pattern, line_count)
-                if found != None:
+                if found is not None:
                     result_list.append(found)
                 line_count += 1

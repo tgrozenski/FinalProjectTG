@@ -5,12 +5,9 @@ class result:
         self.match_percentage: float = match_percentage
         self.line_number: int = line_location
         self.line_index: int = line_index
-    
 
-    # https://www.geeksforgeeks.org/print-objects-of-a-class-in-python/
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # https://www.geeksforgeeks.org/print-objects-of-a-class-in-python/
         return f'Found result "{self.found_str}" from pattern "{self.pattern}" on line: {self.line_number} index: {self.line_index} match percentage: {self.match_percentage}'
-
 
     def __repr__(self) -> str:
         return f'Found result "{self.found_str}" from pattern "{self.pattern}" on line: {self.line_number} index: {self.line_index}match percentage: {self.match_percentage}'
