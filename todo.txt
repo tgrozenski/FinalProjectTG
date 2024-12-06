@@ -1,3 +1,5 @@
 TODO
 
 - Work out some kinks in main
+
+- test regex expression in the terminal with output redirected to out.txt

@@ -10,9 +10,9 @@ FUZZY_ACTION = 'fuzzy_match'
 
 def get_args() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-                        prog='TylerFinder',
+                        prog='TFinder',
                         description='Finds a pattern in a file',
-                        epilog='Text at the bottom of help')
+                        epilog='This program also allows piping from the stdin with a variety of search options')
     parser.add_argument('-i', '--ignore_case',
                     action='store_true')
     parser.add_argument('-e', '--regex',

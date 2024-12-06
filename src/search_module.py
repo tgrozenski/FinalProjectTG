@@ -39,7 +39,6 @@ class searcher:
         None if no result found,
         else it returns the result object
         """
-        # rewrite using .split()
         index = 0
         pattern_len = len(pattern)
         while index <= len(line) - pattern_len:
