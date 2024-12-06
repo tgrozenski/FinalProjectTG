@@ -24,7 +24,7 @@ Found result "instructions" from pattern "INSTRUCTIONS" on line: 2 index: 0 matc
 You can 'pipe' the output of the ls command (or any other command that outputs to the stdout) into the program to be searched. This feature to me is incredibly important because it makes the program compatible with a wide variety of other tools. My favorite part about the unix shell environment is how you can do anything using piping, redirects, and a wide variety of simple but effective command line programs. 
 
 ## Guide
-Users should begin by running the program with the help argument to see the command line argument order to get a helpful usage message from the argparser module:
+Users should begin by running the program with the help argument to see the command line argument order and get a helpful usage message from the argparser module:
 ```bash
 python3 src/main.py -h
 ```
