@@ -28,9 +28,7 @@ Found result "instructions" from pattern "INSTRUCTIONS" on line: 2 index: 0 matc
 You can 'pipe' the output of the ls command (or any other command that outputs to the stdout) into the program to be searched. This feature to me is incredibly important because it makes the program compatible with a wide variety of other tools. My favorite part about the unix shell environment is how you can do anything using piping, redirects, and a wide variety of simple but effective command line programs. 
 
 ## Guide
-How do we run your project? What should we do to see it in action? - Note this isn't installing, this is actual use of the project.. If it is a website, you can point towards the gui, use screenshots, etc talking about features. 
-
-I would recommend that users begin by running the program with the help argument to see the order to get a helpful usage message from the argparser module.  
+Users should begin by running the program with the help argument to see the command line argument order to get a helpful usage message from the argparser module.  
 ```bash
 python3 src/main.py -h
 ```
@@ -54,6 +52,23 @@ This program also allows piping from the stdin with a variety of search options
 ```
 The program has five optional arguments which are help which displays the usages, ignore_case which does a case insensitive match, regex which allows you to input a regular expression to be searched for, z/fuzzy which which will do a fuzzy search using the Levenshtein module to find words that are close to the pattern given. The filename is another optional parameter, if the stdin is empty and no filename is provided the program will throw a user error to tell the user they need to provide some input to be searched. 
 
+### Example Usage 1
+```bash
+python3 src/main.py -f requirements.txt levenshtein
+```
+This is a default usage that provides only a filename to be searched, the program defaults to a case_sensitive perfect match.
+
+### Example Usage 2
+```bash
+history | python3 src/main.py -f GREEP
+```
+This will search the output of the history command to find a fuzzy match (if any exist) to GREEP.
+
+### Example Usage 3
+```bash
+python3 src/main.py -e '[hey|hi|hello] world'
+```
+patterns containing a regular expression and/or spaces should be put in single quotes to prevent errors. 
 
 ## Installation Instructions
 If we wanted to run this project locally, what would we need to do?  If we need to get API key's include that information, and also command line startup commands to execute the project. If you have a lot of dependencies, you can also include a requirements.txt file, but make sure to include that we need to run `pip install -r requirements.txt` or something similar.
@@ -70,8 +85,7 @@ pip install python-Levenshtein
 ## Code Review
 Go over key aspects of code in this section. Both link to the file, include snippets in this report (make sure to use the [coding blocks](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#code)).  Grading wise, we are looking for that you understand your code and what you did. 
 
-### Key Code Aspect 3
-[result](./src/result_module.py)
+### [Aspect 1](./src/result_module.py)
 ```python
 class result:
   def __init__(self, found_str: str, pattern: str, match_percentage: float, line_location: int, line_index: int) -> None:
@@ -87,10 +101,9 @@ class result:
   def __repr__(self) -> str:
       return f'Found result "{self.found_str}" from pattern "{self.pattern}" on line: {self.line_number} index: {self.line_index}match percentage: {self.match_percentage}'
 ```
-This file contains the result class which is the backbone of many other methods. I wanted a way to organize all the results which would be the same as each other. This class offers a neat way to organize, test, and print results using the __str__() and __repr__() methods. I use this [source](https://www.geeksforgeeks.org/print-objects-of-a-class-in-python/) to learn how to print out objects easily. I decided to add the fields what was found, the original pattern, the line_index of the first character, the line number, and the match percentage. These are the aspects of a result I determined are important for the end user, but an argument could be made to include and exclude others. 
+This file contains the result class which is the backbone of how results data are stored and represented. I wanted a way to create a standard for results since there would be many of them, all of which would be very similar. This class offers a neat way to organize, test, and print results using the __str__() and __repr__() methods. I use this [source](https://www.geeksforgeeks.org/print-objects-of-a-class-in-python/) to learn how to print out objects easily. I decided to add the following fields: what was found, the original pattern, the line_index of the first character, the line number, and the match percentage. These are the aspects of a result I determined are important for the end user, but an argument could be made to include and exclude others. 
 
-### Key Code Aspect 2
-[match_line](./src/search_module.py)
+### [Aspect 2](./src/search_module.py)
 ```python
 def match_line(self, line: str, pattern: str, line_number: int) -> result:
   index = 0
@@ -101,10 +114,9 @@ def match_line(self, line: str, pattern: str, line_number: int) -> result:
       index += 1
   return None
 ```
-This code takes a pattern and finds an identical match, it iterates though the line taking a slice the size of the pattern and comparing the two. It stops when the slice that will be taken would end up being larger than length of the line minus the pattern. This could save a bit of runtime and deal with the ending of searching for the pattern.
+This code takes a pattern and finds an identical match, it iterates though the line taking a slice the size of the pattern and comparing the slice with the pattern. It stops when the slice that will be taken would end up being larger than length of the line minus the pattern. This could save a bit of runtime and deal with the ending of searching for the pattern it also preserves the index to be added to the result object.
 
-### Key Code Aspect 3
-[fuzzy_match](./src/search_module.py)
+### [Aspect 3](./src/search_module.py)
 ```python
 def fuzzy_match(self, line: str, pattern: str, line_number: int) -> result:
   lower_line = line.casefold()
@@ -174,18 +186,36 @@ def calculate_match(self, match: str, pattern: str) -> str:
   else:
       return str(round(avg * 100)) + '%'
 ```
+I was also proud of this solution which uses the concept of a functional pointer to let me use this one method to use all the various different search methods. I think it was a neat way to reduce code duplication. 
+```python
+def iterate_file(self, file: str, pattern: str, action: str) -> None:
+    line_count = 1
+    # https://stackoverflow.com/questions/2283210/python-function-pointer
+    selected_method = self.__getattribute__(action)
+    with open(file) as user_file:
+        for line in user_file:
+            found = selected_method(line.strip(), pattern, line_count)
+            if found != None:
+                result_list.append(found)
+            line_count += 1
+```
 
 ## Example Runs
 Explain how you documented running the project, and what we need to look for in your repository (text output from the project, small videos, links to videos on youtube of you running it, etc)
+I ran the following command to 
 
 ## Testing
 How did you test your code? What did you do to make sure your code was correct? If you wrote unit tests, you can link to them here. If you did run tests, make sure you document them as text files, and include them in your submission. 
 
 > _Make it easy for us to know you *ran the project* and *tested the project* before you submitted this report!_
 
+I used unit tests to test all of the individual search components in [test_search.py](./testing/test_search.py). I also wrote doc tests but they are just for someone reading the code trying to understand it, I prefer using a unit test class. I wrote this file because it was important to make sure that all the search pieces were working flawlessly before using them on a larger scale. Being able to unit test each individual method made brought the complexity down a lot. For reading files and finding patterns I decided to write a text file with patterns hidden for each of the search options like this example for the [fuzzy search](./testing/data/test_fuzzy.txt). I then use redirection to append the output with `>>` to [out.txt](./testing/data/out.txt). I can then run diff against that file with the expected file. This maybe isn't the best approach because it requires everything to be in the same order, but it was the best I could come up with. 
+
 
 ## Missing Features / What's Next
-Focus on what you didn't get to do, and what you would do if you had more time, or things you would implement in the future. 
+I really wanted to get the feature of searching a directory recursively, which is my favorite grep feature. Unfortunately, it was a very complex feature and my algorithm and unix chops are just not there at this point. I look forward to taking the classes I will next semester because I think I should be able to do this by then. I also had the challenge when it comes to what to do with results when they are found. I chose to keep all functions pure in the search class, but I think maybe it would have been right to keep some sort of global list. I avoided that because I thought it would be a pain to test. Because of this choice the program will only return the first instance of a pattern found on a line. I think that this is mostly ok because the point is mostly to point users to the line, I wasn't able to implement a feature like grep where the line is displayed with the pattern in a different color. 
 
 ## Final Reflection
 Write at least a paragraph about your experience in this course. What did you learn? What do you need to do to learn more? Key takeaways? etc.
+
+I learned a lot over these past few months, I was already programming quite a lot going into this so not everything was entirely new information to me. The class' focus on computational thinking was something that was very valuable to me because it really summed up what I have been learning it means to program. I learned a lot of python and I enjoyed working on all the projects. The most valuable thing I learned by far was the idea of testing driven development. I learned how to write a docstring before a function that will make my code understandable to those who attempt to read it. The idea of pure and impure functions was another valuable, I know now that it is best practice to keep functions as pure as we can to limit side effects and make testing easier. I also had a very rudimentary understanding of absolute and relative paths, this class clarified a lot of confusion I had about that. I think that the greatest area I have to grow in is in algorithms and data structures, I have a solid entry level grasp of object oriented programming. I am really looking forward to what I will get the chance to learn next semester and feel prepared for the challenge. 
